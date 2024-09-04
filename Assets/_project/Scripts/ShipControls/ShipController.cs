@@ -38,7 +38,6 @@ public class ShipController : MonoBehaviour
 
         if (other.tag == "Rock")
         {
-            Debug.Log("jjjjjjj");
             other.gameObject.SetActive(false);
         }
     }
@@ -87,7 +86,9 @@ public class ShipController : MonoBehaviour
             _totalDistanceTraveled += _distanceTraveled;
             _startPosition = transform.position;
             // Update the TMP text with the distance traveled
-            _distanceText.text = $"Distance: {_totalDistanceTraveled:F0} meters";
+            //_distanceText.text = $"Distance: {_totalDistanceTraveled:F0} meters";
+
+            _distanceText.text = (_totalDistanceTraveled / 1000) .ToString("F4") + "X"; 
 
             moveTimer += Time.deltaTime;
 
@@ -97,7 +98,8 @@ public class ShipController : MonoBehaviour
 
             if (!hasExploded && (int)_totalDistanceTraveled >= FInalvalue)
             {
-                _distanceText.text = FInalvalue.ToString();
+                _rigidBody.isKinematic = true;
+                _distanceText.text = (FInalvalue/1000) .ToString() + "X";
                 Debug.Log("hello");
                 DestroyShip();
                 hasExploded = true;  // Set the flag to true so the explosion doesn't repeat
@@ -205,8 +207,8 @@ public class ShipController : MonoBehaviour
         _distanceText.gameObject.SetActive(true);
         FinavalueToDEstroy.gameObject.SetActive(true);
         bigExplosionPrefab.SetActive(false);
-        FInalvalue = 10000;
-        FinavalueToDEstroy.text = FInalvalue.ToString();
+        FInalvalue = Random.Range(200,20000);
+        FinavalueToDEstroy.text = (FInalvalue/1000).ToString();
         foreach (ShipEngine engine in _engines)
         {
             engine.Init(MovementInput, _rigidBody, _shipData.ThrustForce / _engines.Count);
@@ -306,6 +308,7 @@ public class ShipController : MonoBehaviour
     }
     void DestroyShip()
     {
+
         CameraFollow.instance.OnDestruction();
         TriggerExplosion();
     }
@@ -320,7 +323,7 @@ public class ShipController : MonoBehaviour
         {
             bigExplosionPrefab.SetActive(true);
         }
-
+        DismantlePlane.instance.TriggerExplosion();
         // Optionally, destroy the parent object or deactivate it
         Destroy(gameObject, 2f);  // Destroy the parent object after 2 seconds
     }
